@@ -1,10 +1,4 @@
-type CalendarHeaderProps = {
-  currentDate: Date;
-  viewMode: 'week' | 'day';
-  onViewModeChange: (mode: 'week' | 'day') => void;
-  onNavigate: (direction: 'prev' | 'next') => void;
-  onToday: () => void;
-};
+import type { CalendarHeaderProps } from '@/types/calendar';
 
 export const CalendarHeader = ({
   currentDate,
@@ -13,10 +7,10 @@ export const CalendarHeader = ({
   onNavigate,
   onToday,
 }: CalendarHeaderProps) => {
-  const date = currentDate.toLocaleDateString('ru-RU', { month: 'long', year: 'numeric' });
+  const dateLabel = currentDate.toLocaleDateString('ru-RU', { month: 'long', year: 'numeric' });
 
   return (
-    <div
+    <header
       style={{
         display: 'flex',
         justifyContent: 'space-between',
@@ -24,26 +18,40 @@ export const CalendarHeader = ({
         padding: '16px',
       }}
     >
-      <button onClick={onToday}>Today</button>
-      <div>
-        <button onClick={() => onNavigate('prev')}> ◀ </button>
-        <span style={{ margin: '0 16px', fontWeight: 'bold' }}>{date}</span>
-        <button onClick={() => onNavigate('next')}> ▶ </button>
+      <button onClick={onToday} aria-label="Сегодня">
+        Today
+      </button>
+
+      <div role="group" aria-label="Навигация по датам">
+        <button onClick={() => onNavigate('prev')} aria-label="Назад">
+          {' '}
+          ◀{' '}
+        </button>
+        <span style={{ margin: '0 16px', fontWeight: 'bold' }} aria-live="polite">
+          {dateLabel}
+        </span>
+        <button onClick={() => onNavigate('next')} aria-label="Вперед">
+          {' '}
+          ▶{' '}
+        </button>
       </div>
-      <div>
+
+      <div role="radiogroup" aria-label="Режим просмотра">
         <button
           onClick={() => onViewModeChange('week')}
+          aria-checked={viewMode === 'week'}
           style={{ fontWeight: viewMode === 'week' ? 'bold' : 'normal' }}
         >
           Week
         </button>
         <button
           onClick={() => onViewModeChange('day')}
+          aria-checked={viewMode === 'day'}
           style={{ fontWeight: viewMode === 'day' ? 'bold' : 'normal' }}
         >
           Day
         </button>
       </div>
-    </div>
+    </header>
   );
 };

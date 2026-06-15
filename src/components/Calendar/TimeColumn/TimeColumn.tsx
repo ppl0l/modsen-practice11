@@ -1,6 +1,6 @@
 export const TimeColumn = () => {
   return (
-    <div style={{ width: '60px', borderRight: '1px solid #ccc' }}>
+    <div style={{ width: '60px', borderRight: '1px solid #ccc' }} aria-hidden="true">
       {[...Array(24)].map((_, i) => (
         <div
           key={i}

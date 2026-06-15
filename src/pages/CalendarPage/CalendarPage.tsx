@@ -6,7 +6,7 @@ export const CalendarPage = () => {
   const { date, viewMode, setViewMode, navigate, goToToday } = useCalendar();
 
   return (
-    <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '20px' }}>
+    <main style={{ maxWidth: '1200px', margin: '0 auto', padding: '20px' }}>
       <CalendarHeader
         currentDate={date}
         viewMode={viewMode}
@@ -15,6 +15,6 @@ export const CalendarPage = () => {
         onToday={goToToday}
       />
       <CalendarGrid viewMode={viewMode} currentDate={date} />
-    </div>
+    </main>
   );
 };
