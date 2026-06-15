@@ -1,12 +1,7 @@
-import CalendarPage from './pages/CalendarPage';
 import './index.scss';
 
-function App() {
-  return (
-    <div>
-      <CalendarPage />
-    </div>
-  );
-}
+import { CalendarPage } from './pages/CalendarPage/CalendarPage';
 
-export default App;
+export function App() {
+  return <CalendarPage />;
+}

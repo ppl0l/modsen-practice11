@@ -1,13 +1,10 @@
-import TimeColumn from './TimeColumn';
+import type { CalendarGridProps } from '@/types/calendar';
 
-type CalendarGridProps = {
-  viewMode: 'week' | 'day';
-  currentDate: Date;
-};
+import { TimeColumn } from '../TimeColumn/TimeColumn';
 
-const CalendarGrid = ({ viewMode, currentDate }: CalendarGridProps) => {
+export const CalendarGrid = ({ viewMode, currentDate }: CalendarGridProps) => {
   const hours = [...Array(24)].map((_, i) => i);
-  
+
   const weekDays = () => {
     const start = new Date(currentDate);
     const day = start.getDay();
@@ -25,9 +22,15 @@ const CalendarGrid = ({ viewMode, currentDate }: CalendarGridProps) => {
         <TimeColumn />
         <div style={{ flex: 1 }}>
           <div style={{ padding: '16px', textAlign: 'center', background: '#f5f5f5' }}>
-            {currentDate.toLocaleDateString('ru-RU', { weekday: 'long', day: 'numeric', month: 'long' })}
+            {currentDate.toLocaleDateString('ru-RU', {
+              weekday: 'long',
+              day: 'numeric',
+              month: 'long',
+            })}
           </div>
-          {hours.map(i => <div key={i} style={{ height: '60px', borderBottom: '1px solid #eee' }}></div>)}
+          {hours.map((i) => (
+            <div key={i} style={{ height: '60px', borderBottom: '1px solid #eee' }}></div>
+          ))}
         </div>
       </div>
     );
@@ -42,12 +45,12 @@ const CalendarGrid = ({ viewMode, currentDate }: CalendarGridProps) => {
             <div style={{ padding: '16px', textAlign: 'center', background: '#f5f5f5' }}>
               {day.toLocaleDateString('ru-RU', { weekday: 'short', day: 'numeric' })}
             </div>
-            {hours.map(h => <div key={h} style={{ height: '60px', borderBottom: '1px solid #eee' }}></div>)}
+            {hours.map((h) => (
+              <div key={h} style={{ height: '60px', borderBottom: '1px solid #eee' }}></div>
+            ))}
           </div>
         ))}
       </div>
     </div>
   );
 };
-
-export default CalendarGrid;

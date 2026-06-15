@@ -6,7 +6,7 @@ type CalendarHeaderProps = {
   onToday: () => void;
 };
 
-const CalendarHeader = ({
+export const CalendarHeader = ({
   currentDate,
   viewMode,
   onViewModeChange,
@@ -16,7 +16,14 @@ const CalendarHeader = ({
   const date = currentDate.toLocaleDateString('ru-RU', { month: 'long', year: 'numeric' });
 
   return (
-    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px' }}>
+    <div
+      style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        padding: '16px',
+      }}
+    >
       <button onClick={onToday}>Today</button>
       <div>
         <button onClick={() => onNavigate('prev')}> ◀ </button>
@@ -24,11 +31,19 @@ const CalendarHeader = ({
         <button onClick={() => onNavigate('next')}> ▶ </button>
       </div>
       <div>
-        <button onClick={() => onViewModeChange('week')} style={{ fontWeight: viewMode === 'week' ? 'bold' : 'normal' }}>Week</button>
-        <button onClick={() => onViewModeChange('day')} style={{ fontWeight: viewMode === 'day' ? 'bold' : 'normal' }}>Day</button>
+        <button
+          onClick={() => onViewModeChange('week')}
+          style={{ fontWeight: viewMode === 'week' ? 'bold' : 'normal' }}
+        >
+          Week
+        </button>
+        <button
+          onClick={() => onViewModeChange('day')}
+          style={{ fontWeight: viewMode === 'day' ? 'bold' : 'normal' }}
+        >
+          Day
+        </button>
       </div>
     </div>
   );
 };
-
-export default CalendarHeader;

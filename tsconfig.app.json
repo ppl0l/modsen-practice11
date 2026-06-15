@@ -22,8 +22,13 @@
     "noFallthroughCasesInSwitch": true,
 
     /* Path aliases */
+    "ignoreDeprecations": "6.0",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@components/*": ["./src/components/*"],
+      "@pages/*": ["./src/pages/*"],
+      "@types/*": ["./src/types/*"],
+      "@utils/*": ["./src/utils/*"]
     }
   },
   "include": ["src", "eslint.config.js", "vite.config.ts"]
