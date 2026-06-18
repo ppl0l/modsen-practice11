@@ -1,95 +1,68 @@
+import { useEffect, useState } from 'react';
+import { FiClock } from 'react-icons/fi';
+
 import type { CalendarGridProps } from '@/types/calendar';
+import { getHoursArray, getWeekDays } from '@/utils/dateUtils';
 
 import { TimeColumn } from '../TimeColumn/TimeColumn';
-
-const hours = [...Array(24)].map((_, i) => i);
+import styles from './CalendarGrid.module.scss';
 
 export const CalendarGrid = ({ viewMode, currentDate }: CalendarGridProps) => {
-  const weekDays = () => {
-    const start = new Date(currentDate);
-    const day = start.getDay();
-    start.setDate(start.getDate() - day + (day === 0 ? -6 : 1));
-    return [...Array(7)].map((_, i) => {
-      const d = new Date(start);
-      d.setDate(start.getDate() + i);
-      return d;
-    });
-  };
+  const hours = getHoursArray();
+  const days = viewMode === 'day' ? [currentDate] : getWeekDays(currentDate);
+  const [now, setNow] = useState(() => new Date());
 
-  if (viewMode === 'day') {
-    return (
-      <div
-        style={{ display: 'flex', border: '1px solid #ccc' }}
-        role="grid"
-        aria-label={`Расписание на ${currentDate.toLocaleDateString()}`}
-      >
-        <TimeColumn />
-        <div style={{ flex: 1 }}>
-          <div role="row">
-            <div
-              style={{ padding: '16px', textAlign: 'center', background: '#f5f5f5' }}
-              role="columnheader"
-              aria-label={currentDate.toLocaleDateString('ru-RU', {
-                weekday: 'long',
-                day: 'numeric',
-                month: 'long',
-              })}
-            >
-              {currentDate.toLocaleDateString('ru-RU', {
-                weekday: 'long',
-                day: 'numeric',
-                month: 'long',
-              })}
-            </div>
-          </div>
-          {hours.map((h) => (
-            <div key={h} role="row">
-              <div
-                role="gridcell"
-                aria-label={`${h}:00, ${currentDate.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' })}`}
-                style={{ height: '60px', borderBottom: '1px solid #eee' }}
-              />
+  useEffect(() => {
+    const timer = setInterval(() => setNow(new Date()), 60000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const shouldShowIndicator = days.some((day) => day.toDateString() === now.toDateString());
+  const nowIndicatorTop = now.getHours() * 60 + now.getMinutes();
+
+  return (
+    <div className={styles.gridWrapper}>
+      <div className={styles.gridHeaderRow}>
+        <div className={styles.headerCorner}>
+          <FiClock size={16} />
+        </div>
+
+        <div className={styles.headerDaysContainer}>
+          {days.map((day) => (
+            <div key={day.toISOString()} className={styles.headerDayWrapper}>
+              <div className={styles.columnHeader}>
+                <span className={styles.weekdayLabel}>
+                  {day.toLocaleDateString('en-US', { weekday: 'short' })}
+                </span>
+                <span className={styles.dayLabel}>{day.getDate()}</span>
+              </div>
             </div>
           ))}
         </div>
       </div>
-    );
-  }
 
-  return (
-    <div style={{ overflowX: 'auto' }}>
-      <div
-        style={{ display: 'flex', minWidth: '800px', border: '1px solid #ccc' }}
-        role="grid"
-        aria-label="Календарь на неделю"
-      >
-        <TimeColumn />
-        {weekDays().map((day) => (
-          <div key={day.toISOString()} style={{ flex: 1 }}>
-            <div role="row">
+      <div className={styles.gridScrollContainer}>
+        <div className={styles.gridBody}>
+          <TimeColumn />
+
+          <div className={styles.gridContainer} role="grid" aria-label="Calendar grid">
+            {shouldShowIndicator && (
               <div
-                style={{ padding: '16px', textAlign: 'center', background: '#f5f5f5' }}
-                role="columnheader"
-                aria-label={day.toLocaleDateString('ru-RU', {
-                  weekday: 'long',
-                  day: 'numeric',
-                  month: 'long',
-                })}
-              >
-                {day.toLocaleDateString('ru-RU', { weekday: 'short', day: 'numeric' })}
-              </div>
-            </div>
-            {hours.map((h) => (
-              <div key={h} role="row">
-                <div
-                  role="gridcell"
-                  aria-label={`${h}:00, ${day.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' })}`}
-                  style={{ height: '60px', borderBottom: '1px solid #eee' }}
-                />
+                className={styles.nowIndicator}
+                style={{ top: `${nowIndicatorTop}px` }}
+                aria-hidden="true"
+              />
+            )}
+
+            {days.map((day) => (
+              <div key={day.toISOString()} className={styles.column}>
+                {hours.map((h) => (
+                  <div key={h} className={styles.cell} />
+                ))}
               </div>
             ))}
           </div>
-        ))}
+        </div>
       </div>
     </div>
   );

@@ -11,10 +11,5 @@ export const getWeekDays = (currentDate: Date): Date[] => {
 
 export const getHoursArray = (): number[] => [...Array(24)].map((_, i) => i);
 
-export const getNavigationDays = (viewMode: 'week' | 'day'): number => {
-  const NAVIGATION_DAYS = {
-    week: 7,
-    day: 1,
-  } as const;
-  return NAVIGATION_DAYS[viewMode];
-};
+export const getNavigationDays = (viewMode: 'week' | 'day'): number =>
+  viewMode === 'week' ? 7 : 1;

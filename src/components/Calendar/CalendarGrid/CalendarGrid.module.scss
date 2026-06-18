@@ -1,0 +1,152 @@
+%border-right {
+  border-right: 1px solid #f1f5f9;
+  &:last-child {
+    border-right: none;
+  }
+}
+
+.gridWrapper {
+  background: #ffffff;
+  border-radius: 0 0 16px 16px;
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.05),
+    0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.gridHeaderRow,
+.gridBody,
+.gridContainer,
+.headerDaysContainer {
+  display: flex;
+}
+
+.gridHeaderRow {
+  border-bottom: 1px solid #f1f5f9;
+  flex-shrink: 0;
+  z-index: 20;
+}
+
+.headerDaysContainer,
+.gridContainer {
+  flex: 1;
+}
+
+.gridScrollContainer {
+  overflow-y: auto;
+  overflow-x: hidden;
+  flex: 1;
+  background: #ffffff;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.gridContainer {
+  position: relative;
+}
+
+.headerCorner {
+  width: 60px;
+  border-right: 1px solid #f1f5f9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #94a3b8;
+  flex-shrink: 0;
+
+  @include mobile {
+    width: 45px;
+  }
+}
+
+.headerDayWrapper,
+.column {
+  flex: 1;
+  @extend %border-right;
+  display: flex;
+  flex-direction: column;
+}
+
+.columnHeader {
+  padding: 12px 4px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  justify-content: center;
+
+  @include mobile {
+    padding: 6px 2px;
+  }
+}
+
+.weekdayLabel {
+  font-size: 12px;
+  font-weight: 600;
+  color: #94a3b8;
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  @include mobile {
+    font-size: 9px;
+  }
+}
+
+.dayLabel {
+  font-size: 15px;
+  font-weight: 700;
+  color: #334155;
+
+  @include mobile {
+    font-size: 12px;
+  }
+}
+
+.cell {
+  height: 60px;
+  border-bottom: 1px solid #f8fafc;
+  transition: background-color 0.1s ease;
+
+  &:hover {
+    background-color: #f8fafc;
+    cursor: pointer;
+  }
+}
+
+.nowIndicator {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: #ef4444;
+  z-index: 10;
+  pointer-events: none;
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #ef4444;
+    transform: translate(0, -50%);
+  }
+
+  &::before {
+    left: 0;
+  }
+  &::after {
+    right: 0;
+  }
+}

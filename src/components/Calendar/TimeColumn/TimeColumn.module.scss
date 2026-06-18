@@ -1,0 +1,27 @@
+.timeColumn {
+  width: 60px;
+  min-width: 60px;
+  border-right: 1px solid #f1f5f9;
+  flex-shrink: 0;
+
+  @include mobile {
+    width: 45px;
+    min-width: 45px;
+  }
+}
+
+.timeCell {
+  height: 60px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 8px;
+  border-bottom: 1px solid #f8fafc;
+  font-size: 12px;
+  font-weight: 500;
+  color: #94a3b8;
+
+  @include mobile {
+    font-size: 9px;
+  }
+}

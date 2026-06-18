@@ -1,19 +1,15 @@
+import { getHoursArray } from '@/utils/dateUtils';
+
+import styles from './TimeColumn.module.scss';
+
 export const TimeColumn = () => {
+  const hours = getHoursArray();
+
   return (
-    <div style={{ width: '60px', borderRight: '1px solid #ccc' }} aria-hidden="true">
-      {[...Array(24)].map((_, i) => (
-        <div
-          key={i}
-          style={{
-            height: '60px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            borderBottom: '1px solid #eee',
-            fontSize: '12px',
-          }}
-        >
-          {i.toString().padStart(2, '0')}:00
+    <div className={styles.timeColumn} aria-hidden="true">
+      {hours.map((h) => (
+        <div key={h} className={styles.timeCell}>
+          {h.toString().padStart(2, '0')}:00
         </div>
       ))}
     </div>
