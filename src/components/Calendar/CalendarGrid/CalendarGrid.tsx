@@ -1,24 +1,115 @@
-import { useEffect, useState } from 'react';
+import type { DragEndEvent } from '@dnd-kit/core';
+import {
+  DndContext,
+  DragOverlay,
+  PointerSensor,
+  useDraggable,
+  useDroppable,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
+import { useEffect, useMemo, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { FiClock } from 'react-icons/fi';
 
-import type { CalendarGridProps } from '@/types/calendar';
-import { getHoursArray, getWeekDays } from '@/utils/dateUtils';
+import type { CalendarEvent, CalendarGridProps } from '@/types/calendar';
+import { getHoursArray, getWeekDays, isTodayInDays } from '@/utils/dateUtils';
+import {
+  calculateEventHeight,
+  calculateNowIndicatorTop,
+  formatDateForForm,
+  groupEventsByDateHour,
+  parseCellId,
+} from '@/utils/eventUtils';
 
 import { TimeColumn } from '../TimeColumn/TimeColumn';
 import styles from './CalendarGrid.module.scss';
 
-export const CalendarGrid = ({ viewMode, currentDate }: CalendarGridProps) => {
+interface ExtendedCalendarGridProps extends CalendarGridProps {
+  events: CalendarEvent[];
+  onCellClick: (date: Date) => void;
+  onEventClick: (event: CalendarEvent) => void;
+  onEventDrop?: (eventId: string, newDate: string, newTime: string) => void;
+}
+
+const GRID_STEP = 61;
+const REFRESH_INTERVAL = 60000;
+
+const DraggableEvent = ({
+  event,
+  onEventClick,
+}: {
+  event: CalendarEvent;
+  onEventClick: (e: CalendarEvent) => void;
+}) => {
+  const { attributes, listeners, setNodeRef, isDragging } = useDraggable({ id: event.id });
+
+  const height = useMemo(
+    () => calculateEventHeight(event.startTime, event.endTime, GRID_STEP),
+    [event.startTime, event.endTime]
+  );
+
+  return (
+    <div
+      ref={setNodeRef}
+      {...attributes}
+      {...listeners}
+      className={styles.eventItem}
+      style={{
+        borderColor: event.color,
+        height: `${height}px`,
+        opacity: isDragging ? 0.3 : 1,
+      }}
+      onClick={(e) => {
+        e.stopPropagation();
+        onEventClick(event);
+      }}
+    >
+      <div className={styles.eventTitle}>{event.title}</div>
+    </div>
+  );
+};
+
+const CellDropZone = ({ id }: { id: string }) => {
+  const { setNodeRef } = useDroppable({ id });
+  return <div ref={setNodeRef} className={styles.dropZone} />;
+};
+
+export const CalendarGrid = ({
+  viewMode,
+  currentDate,
+  events,
+  onCellClick,
+  onEventClick,
+  onEventDrop,
+}: ExtendedCalendarGridProps) => {
   const hours = getHoursArray();
-  const days = viewMode === 'day' ? [currentDate] : getWeekDays(currentDate);
-  const [now, setNow] = useState(() => new Date());
+  const [now, setNow] = useState(new Date());
 
   useEffect(() => {
-    const timer = setInterval(() => setNow(new Date()), 60000);
+    const timer = setInterval(() => setNow(new Date()), REFRESH_INTERVAL);
     return () => clearInterval(timer);
   }, []);
 
-  const shouldShowIndicator = days.some((day) => day.toDateString() === now.toDateString());
-  const nowIndicatorTop = now.getHours() * 60 + now.getMinutes();
+  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 8 } }));
+  const [activeEvent, setActiveEvent] = useState<CalendarEvent | null>(null);
+
+  const days = useMemo(
+    () => (viewMode === 'day' ? [currentDate] : getWeekDays(currentDate)),
+    [viewMode, currentDate]
+  );
+  const eventsMap = useMemo(() => groupEventsByDateHour(events), [events]);
+
+  const shouldShowIndicator = useMemo(() => isTodayInDays(days, now), [days, now]);
+  const nowIndicatorTop = calculateNowIndicatorTop(now, GRID_STEP);
+
+  const handleDragEnd = ({ active, over }: DragEndEvent) => {
+    setActiveEvent(null);
+    if (!over || !onEventDrop) return;
+
+    const { date, hour } = parseCellId(over.id as string);
+    onEventDrop(active.id as string, date, hour);
+  };
 
   return (
     <div className={styles.gridWrapper}>
@@ -26,7 +117,6 @@ export const CalendarGrid = ({ viewMode, currentDate }: CalendarGridProps) => {
         <div className={styles.headerCorner}>
           <FiClock size={16} />
         </div>
-
         <div className={styles.headerDaysContainer}>
           {days.map((day) => (
             <div key={day.toISOString()} className={styles.headerDayWrapper}>
@@ -42,27 +132,57 @@ export const CalendarGrid = ({ viewMode, currentDate }: CalendarGridProps) => {
       </div>
 
       <div className={styles.gridScrollContainer}>
-        <div className={styles.gridBody}>
-          <TimeColumn />
+        <DndContext
+          sensors={sensors}
+          onDragStart={({ active }) =>
+            setActiveEvent(events.find((e) => e.id === active.id) || null)
+          }
+          onDragEnd={handleDragEnd}
+        >
+          <div className={styles.gridBody}>
+            <TimeColumn />
+            <div className={styles.gridContainer}>
+              {shouldShowIndicator && (
+                <div className={styles.nowIndicator} style={{ top: `${nowIndicatorTop}px` }} />
+              )}
 
-          <div className={styles.gridContainer} role="grid" aria-label="Calendar grid">
-            {shouldShowIndicator && (
-              <div
-                className={styles.nowIndicator}
-                style={{ top: `${nowIndicatorTop}px` }}
-                aria-hidden="true"
-              />
-            )}
-
-            {days.map((day) => (
-              <div key={day.toISOString()} className={styles.column}>
-                {hours.map((h) => (
-                  <div key={h} className={styles.cell} />
-                ))}
-              </div>
-            ))}
+              {days.map((day) => (
+                <div key={day.toISOString()} className={styles.column}>
+                  {hours.map((h) => {
+                    const dateKey = formatDateForForm(day);
+                    const cellId = `cell-${dateKey}-${h}`;
+                    return (
+                      <div
+                        key={cellId}
+                        className={styles.cell}
+                        onClick={() => {
+                          const d = new Date(day);
+                          d.setHours(h, 0, 0, 0);
+                          onCellClick(d);
+                        }}
+                      >
+                        <CellDropZone id={cellId} />
+                        {eventsMap[`${dateKey}-${h}`]?.map((e: CalendarEvent) => (
+                          <DraggableEvent key={e.id} event={e} onEventClick={onEventClick} />
+                        ))}
+                      </div>
+                    );
+                  })}
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
+          {createPortal(
+            <DragOverlay>
+              {activeEvent && (
+                <div className={styles.dragOverlay} style={{ borderColor: activeEvent.color }}>
+                  {activeEvent.title}
+                </div>
+              )}
+            </DragOverlay>,
+            document.body
+          )}
+        </DndContext>
       </div>
     </div>
   );

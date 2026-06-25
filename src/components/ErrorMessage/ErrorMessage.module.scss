@@ -14,18 +14,18 @@
 .title {
   font-size: 18px;
   font-weight: 700;
-  color: #64748b;
+  color: var(--color-text-secondary);
 }
 
 .text {
   font-size: 14px;
-  color: #64748b;
+  color: var(--color-text-secondary);
   max-width: 400px;
 }
 
 .retryBtn {
   padding: 8px 16px;
-  background: #3b82f6;
+  background: var(--color-primary);
   color: #ffffff;
   border: none;
   border-radius: 20px;
@@ -33,6 +33,6 @@
   cursor: pointer;
 
   &:hover {
-    background: #2563eb;
+    background: var(--color-primary-hover);
   }
 }

@@ -13,3 +13,7 @@ export const getHoursArray = (): number[] => [...Array(24)].map((_, i) => i);
 
 export const getNavigationDays = (viewMode: 'week' | 'day'): number =>
   viewMode === 'week' ? 7 : 1;
+
+export const isTodayInDays = (days: Date[], now: Date): boolean => {
+  return days.some((day) => day.toDateString() === now.toDateString());
+};
