@@ -24,17 +24,6 @@ export const EventModal = ({
     getInitialEventFormData(event || null, initialDate || null, defaultColor)
   );
 
-  const [prevEventId, setPrevEventId] = useState<string | null>(event?.id || null);
-  const [prevIsOpen, setPrevIsOpen] = useState(isOpen);
-
-  if (isOpen !== prevIsOpen || event?.id !== prevEventId) {
-    setPrevIsOpen(isOpen);
-    setPrevEventId(event?.id || null);
-    if (isOpen) {
-      setFormData(getInitialEventFormData(event || null, initialDate || null, defaultColor));
-    }
-  }
-
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<Array<{ id: string; title: string }>>([]);
   const [showSearchResults, setShowSearchResults] = useState(false);
@@ -46,6 +35,12 @@ export const EventModal = ({
 
   useOnClickOutside(searchRef, () => setShowSearchResults(false));
   useOnClickOutside(colorPickerRef, () => setShowColorPicker(false));
+
+  useEffect(() => {
+    if (isOpen) {
+      setFormData(getInitialEventFormData(event || null, initialDate || null, defaultColor));
+    }
+  }, [isOpen, event, initialDate, defaultColor]);
 
   useEffect(() => {
     const performSearch = async () => {
