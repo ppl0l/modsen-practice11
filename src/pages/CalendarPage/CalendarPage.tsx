@@ -7,8 +7,8 @@ import { ConfirmModal } from '@/components/ConfirmModal/ConfirmModal';
 import { ErrorMessage } from '@/components/ErrorMessage/ErrorMessage';
 import { EventModal } from '@/components/EventModal/EventModal';
 import { Loader } from '@/components/Loader/Loader';
-import { useEvents } from '@/context/EventContext';
 import { useCalendar } from '@/hooks/useCalendar';
+import { useEvents } from '@/hooks/useEvents';
 import type { CalendarEvent, EventFormData } from '@/types/calendar';
 
 import styles from './CalendarPage.module.scss';

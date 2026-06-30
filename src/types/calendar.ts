@@ -14,7 +14,14 @@ export interface CalendarGridProps {
   currentDate: Date;
 }
 
-export type EventColor = '#EF4444' | '#F59E0B' | '#10B981' | '#3B82F6' | '#8B5CF6' | '#EC4899' | '#14B8A6';
+export type EventColor =
+  | '#EF4444'
+  | '#F59E0B'
+  | '#10B981'
+  | '#3B82F6'
+  | '#8B5CF6'
+  | '#EC4899'
+  | '#14B8A6';
 
 export const EVENT_COLORS: EventColor[] = [
   '#EF4444',

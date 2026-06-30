@@ -2,13 +2,31 @@ import { Component, type ErrorInfo, type ReactNode } from 'react';
 
 import styles from '../ErrorMessage/ErrorMessage.module.scss';
 
-export class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boolean }> {
-  state = { hasError: false };
+interface ErrorBoundaryState {
+  hasError: boolean;
+}
 
-  static getDerivedStateFromError = () => ({ hasError: true });
+interface ErrorBoundaryProps {
+  children: ReactNode;
+}
 
-  componentDidCatch(error: Error, info: ErrorInfo) {
+export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
+  constructor(props: ErrorBoundaryProps) {
+    super(props);
+    this.state = { hasError: false };
+    this.handleReload = this.handleReload.bind(this);
+  }
+
+  static getDerivedStateFromError(): ErrorBoundaryState {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error: Error, info: ErrorInfo): void {
     console.error('ErrorBoundary caught:', error, info);
+  }
+
+  handleReload(): void {
+    window.location.reload();
   }
 
   render() {
@@ -17,7 +35,7 @@ export class ErrorBoundary extends Component<{ children: ReactNode }, { hasError
         <div className={styles.errorWrapper}>
           <div className={styles.title}>Something went wrong</div>
           <p className={styles.text}>The application encountered an unexpected error</p>
-          <button className={styles.retryBtn} onClick={() => window.location.reload()}>
+          <button className={styles.retryBtn} onClick={this.handleReload}>
             Refresh the page
           </button>
         </div>

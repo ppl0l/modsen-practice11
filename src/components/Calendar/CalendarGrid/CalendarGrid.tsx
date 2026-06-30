@@ -8,7 +8,7 @@ import {
   useSensor,
   useSensors,
 } from '@dnd-kit/core';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { FiClock } from 'react-icons/fi';
 
@@ -44,10 +44,7 @@ const DraggableEvent = ({
 }) => {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({ id: event.id });
 
-  const height = useMemo(
-    () => calculateEventHeight(event.startTime, event.endTime, GRID_STEP),
-    [event.startTime, event.endTime]
-  );
+  const height = calculateEventHeight(event.startTime, event.endTime, GRID_STEP);
 
   return (
     <div
@@ -94,13 +91,9 @@ export const CalendarGrid = ({
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 8 } }));
   const [activeEvent, setActiveEvent] = useState<CalendarEvent | null>(null);
 
-  const days = useMemo(
-    () => (viewMode === 'day' ? [currentDate] : getWeekDays(currentDate)),
-    [viewMode, currentDate]
-  );
-  const eventsMap = useMemo(() => groupEventsByDateHour(events), [events]);
-
-  const shouldShowIndicator = useMemo(() => isTodayInDays(days, now), [days, now]);
+  const days = viewMode === 'day' ? [currentDate] : getWeekDays(currentDate);
+  const eventsMap = groupEventsByDateHour(events);
+  const shouldShowIndicator = isTodayInDays(days, now);
   const nowIndicatorTop = calculateNowIndicatorTop(now, GRID_STEP);
 
   const handleDragEnd = ({ active, over }: DragEndEvent) => {

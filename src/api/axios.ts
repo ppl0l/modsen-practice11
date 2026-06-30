@@ -1,11 +1,9 @@
 import axios, { AxiosError } from 'axios';
 
-const API_KEY = 'PbeMSVsgVdGJ3zyHHOGG9GZ6kTiGS5wS';
+const API_KEY = import.meta.env.VITE_TICKETMASTER_API_KEY;
 
 const isDev = import.meta.env.DEV;
-const BASE_URL = isDev 
-  ? '/api'
-  : 'https://app.ticketmaster.com/discovery/v2'; 
+const BASE_URL = isDev ? '/api' : 'https://app.ticketmaster.com/discovery/v2';
 
 export const apiClient = axios.create({
   baseURL: BASE_URL,

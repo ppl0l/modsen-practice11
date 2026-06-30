@@ -1,20 +1,14 @@
-@mixin mobile {
-  @media (max-width: 768px) {
-    @content;
-  }
-}
-
 %border-right {
-  border-right: 1px solid var(--color-border-main);
+  border-right: 1px solid $color-border-main;
   &:last-child {
     border-right: none;
   }
 }
 
 .gridWrapper {
-  background: var(--color-bg-card);
+  background: $color-bg-card;
   border-radius: 0 0 16px 16px;
-  box-shadow: var(--shadow-md);
+  box-shadow: $shadow-md;
   display: flex;
   flex-direction: column;
   flex: 1;
@@ -24,19 +18,20 @@
 
 .gridHeaderRow {
   display: flex;
-  border-bottom: 1px solid var(--color-border-main);
+  border-bottom: 1px solid $color-border-main;
   flex-shrink: 0;
   z-index: 20;
 }
 
 .headerCorner {
   width: 60px;
-  border-right: 1px solid var(--color-border-main);
+  border-right: 1px solid $color-border-main;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--color-text-muted);
+  color: $color-text-muted;
   flex-shrink: 0;
+
   @include mobile {
     width: 45px;
   }
@@ -60,6 +55,7 @@
   display: flex;
   flex-direction: column;
   gap: 2px;
+
   @include mobile {
     padding: 6px 2px;
   }
@@ -68,21 +64,23 @@
 .weekdayLabel {
   font-size: 12px;
   font-weight: 600;
-  color: var(--color-text-muted);
+  color: $color-text-muted;
   text-transform: uppercase;
 }
+
 .dayLabel {
   font-size: 15px;
   font-weight: 700;
-  color: var(--color-text-primary);
+  color: $color-text-primary;
 }
 
 .gridScrollContainer {
   overflow-y: auto;
   overflow-x: hidden;
   flex: 1;
-  background: var(--color-bg-card);
+  background: $color-bg-card;
   scrollbar-width: none;
+
   &::-webkit-scrollbar {
     display: none;
   }
@@ -109,10 +107,11 @@
 .cell {
   box-sizing: border-box;
   height: 60px;
-  border-bottom: 1px solid var(--color-border-light);
+  border-bottom: 1px solid $color-border-light;
   position: relative;
+
   &:hover {
-    background-color: var(--color-bg-hover);
+    background-color: $color-bg-hover;
     cursor: pointer;
   }
 }
@@ -128,9 +127,10 @@
   left: 0;
   right: 0;
   height: 2px;
-  background-color: var(--color-danger);
+  background-color: $color-danger;
   z-index: 10;
   pointer-events: none;
+
   &::before {
     content: '';
     position: absolute;
@@ -139,7 +139,7 @@
     width: 8px;
     height: 8px;
     border-radius: 50%;
-    background-color: var(--color-danger);
+    background-color: $color-danger;
     transform: translate(-50%, -50%);
   }
 }
@@ -150,15 +150,14 @@
   left: 4px;
   right: 4px;
   z-index: 5;
-  background: var(--color-bg-card);
-  border: 2px solid;
+  background: $color-bg-card;
+  border: 2px solid $color-border-main;
   border-radius: 8px;
   padding: 4px 6px;
   cursor: grab;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   box-sizing: border-box;
   overflow: hidden;
-
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -169,10 +168,9 @@
   font-size: 11px;
   line-height: 1.2;
   font-weight: 700;
-  color: var(--color-text-primary);
+  color: $color-text-primary;
   text-align: left;
   width: 100%;
-
   word-break: break-word;
   display: -webkit-box;
   line-clamp: 2;
@@ -187,14 +185,14 @@
 }
 
 .dragOverlay {
-  background: var(--color-bg-card);
-  border: 2px solid;
+  background: $color-bg-card;
+  border: 2px solid $color-border-main;
   border-radius: 8px;
   padding: 8px;
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
   pointer-events: none;
   font-size: 11px;
   font-weight: 700;
-  color: var(--color-text-primary);
+  color: $color-text-primary;
   max-width: 150px;
 }

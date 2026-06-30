@@ -26,20 +26,32 @@ export const EventModal = ({
 
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<Array<{ id: string; title: string }>>([]);
-  const [showSearchResults, setShowSearchResults] = useState(false);
-  const [showColorPicker, setShowColorPicker] = useState(false);
+  const [isSearchResultsVisible, setIsSearchResultsVisible] = useState(false);
+  const [isColorPickerVisible, setIsColorPickerVisible] = useState(false);
 
   const searchRef = useRef<HTMLDivElement>(null);
   const colorPickerRef = useRef<HTMLDivElement>(null);
   const debouncedSearchQuery = useDebounce(searchQuery, 500);
 
-  useOnClickOutside(searchRef, () => setShowSearchResults(false));
-  useOnClickOutside(colorPickerRef, () => setShowColorPicker(false));
+  useOnClickOutside(searchRef, () => setIsSearchResultsVisible(false));
+  useOnClickOutside(colorPickerRef, () => setIsColorPickerVisible(false));
+
+  const prevIsOpen = useRef(isOpen);
+  const prevEventId = useRef(event?.id);
+  const prevInitialDate = useRef(initialDate?.toISOString());
 
   useEffect(() => {
-    if (isOpen) {
+    const isOpening = isOpen && !prevIsOpen.current;
+    const eventChanged = event?.id !== prevEventId.current;
+    const dateChanged = initialDate?.toISOString() !== prevInitialDate.current;
+
+    if (isOpening || eventChanged || dateChanged) {
       setFormData(getInitialEventFormData(event || null, initialDate || null, defaultColor));
     }
+
+    prevIsOpen.current = isOpen;
+    prevEventId.current = event?.id;
+    prevInitialDate.current = initialDate?.toISOString();
   }, [isOpen, event, initialDate, defaultColor]);
 
   useEffect(() => {
@@ -47,10 +59,10 @@ export const EventModal = ({
       if (debouncedSearchQuery.trim().length >= 2) {
         const result = await searchEventsSafe(debouncedSearchQuery);
         setSearchResults(result.data || []);
-        setShowSearchResults(true);
+        setIsSearchResultsVisible(true);
       } else {
         setSearchResults([]);
-        setShowSearchResults(false);
+        setIsSearchResultsVisible(false);
       }
     };
     performSearch();
@@ -62,8 +74,44 @@ export const EventModal = ({
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
+  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+    handleUpdate('title', e.target.value);
+  };
+
+  const handleSearchResultClick = (title: string) => {
+    handleUpdate('title', title);
+    setIsSearchResultsVisible(false);
+  };
+
+  const handleColorSelect = (color: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    handleUpdate('color', color);
+    setIsColorPickerVisible(false);
+  };
+
+  const handleSave = () => {
+    if (formData.title) {
+      onSubmit(formData);
+      onClose();
+    }
+  };
+
+  const handleDelete = () => {
+    if (event && onDelete) {
+      onDelete(event.id);
+      onClose();
+    }
+  };
+
+  const handleOverlayClick = (e: React.MouseEvent) => {
+    if (e.target === e.currentTarget) {
+      onClose();
+    }
+  };
+
   return (
-    <div className={styles.overlay} onClick={onClose}>
+    <div className={styles.overlay} onClick={handleOverlayClick}>
       <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
         <div className={styles.header}>
           <div className={styles.searchContainer} ref={searchRef}>
@@ -71,22 +119,13 @@ export const EventModal = ({
               className={styles.titleInput}
               placeholder="Search Event..."
               value={formData.title}
-              onChange={(e) => {
-                setSearchQuery(e.target.value);
-                handleUpdate('title', e.target.value);
-              }}
-              onFocus={() => searchResults.length > 0 && setShowSearchResults(true)}
+              onChange={handleTitleChange}
+              onFocus={() => searchResults.length > 0 && setIsSearchResultsVisible(true)}
             />
-            {showSearchResults && searchResults.length > 0 && (
+            {isSearchResultsVisible && searchResults.length > 0 && (
               <ul className={styles.dropdown}>
                 {searchResults.map((res) => (
-                  <li
-                    key={res.id}
-                    onClick={() => {
-                      handleUpdate('title', res.title);
-                      setShowSearchResults(false);
-                    }}
-                  >
+                  <li key={res.id} onClick={() => handleSearchResultClick(res.title)}>
                     {res.title}
                   </li>
                 ))}
@@ -97,22 +136,18 @@ export const EventModal = ({
           <div
             className={styles.colorSelector}
             ref={colorPickerRef}
-            onClick={() => setShowColorPicker(!showColorPicker)}
+            onClick={() => setIsColorPickerVisible(!isColorPickerVisible)}
           >
             <div className={styles.colorCircle} style={{ backgroundColor: formData.color }} />
             <FiChevronDown />
-            {showColorPicker && (
+            {isColorPickerVisible && (
               <div className={styles.colorBadge}>
                 {EVENT_COLORS_WITH_NAMES.map((c) => (
                   <div
                     key={c.color}
                     className={styles.colorOption}
                     style={{ backgroundColor: c.color }}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleUpdate('color', c.color);
-                      setShowColorPicker(false);
-                    }}
+                    onClick={(e) => handleColorSelect(c.color, e)}
                   />
                 ))}
               </div>
@@ -165,24 +200,11 @@ export const EventModal = ({
         </div>
 
         <div className={styles.footer}>
-          <button
-            className={styles.btn}
-            disabled={!formData.title}
-            onClick={() => {
-              onSubmit(formData);
-              onClose();
-            }}
-          >
+          <button className={styles.btn} disabled={!formData.title} onClick={handleSave}>
             Save
           </button>
           {event && (
-            <button
-              className={styles.btn}
-              onClick={() => {
-                onDelete?.(event.id);
-                onClose();
-              }}
-            >
+            <button className={styles.btn} onClick={handleDelete}>
               Delete
             </button>
           )}

@@ -1,9 +1,17 @@
 import react from '@vitejs/plugin-react';
 import path from 'path';
 import { defineConfig } from 'vite';
+import babel from 'vite-plugin-babel';
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    react(),
+    babel({
+      babelConfig: {
+        plugins: [['babel-plugin-react-compiler', { target: '18' }]],
+      },
+    }),
+  ],
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
@@ -16,7 +24,10 @@ export default defineConfig({
   css: {
     preprocessorOptions: {
       scss: {
-        additionalData: `@use "@/styles/breakpoints" as *;`,
+        additionalData: `
+          @use "@/styles/breakpoints" as *;
+          @use "@/styles/variables" as *;
+        `,
       },
     },
   },
