@@ -1,0 +1,28 @@
+.timeColumn {
+  width: 60px;
+  min-width: 60px;
+  border-right: 1px solid $color-border-main;
+  flex-shrink: 0;
+
+  @include mobile {
+    width: 45px;
+    min-width: 45px;
+  }
+}
+
+.timeCell {
+  box-sizing: border-box;
+  height: 60px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 8px;
+  border-bottom: 1px solid $color-border-light;
+  font-size: 12px;
+  font-weight: 500;
+  color: $color-text-muted;
+
+  @include mobile {
+    font-size: 9px;
+  }
+}

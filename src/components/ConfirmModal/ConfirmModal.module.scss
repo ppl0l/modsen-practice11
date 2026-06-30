@@ -1,0 +1,141 @@
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  animation: fadeIn 0.2s ease;
+}
+
+.modal {
+  background: $color-bg-card;
+  border-radius: 8px;
+  padding: 24px;
+  max-width: 480px;
+  width: 90%;
+  text-align: left;
+  animation: slideUp 0.3s ease;
+  box-shadow: $shadow-md;
+
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  grid-template-areas:
+    'icon title close'
+    '. message .'
+    '. actions .';
+  column-gap: 16px;
+
+  @include mobile {
+    padding: 20px;
+  }
+}
+
+.icon {
+  grid-area: icon;
+  color: $color-text-dark;
+  background-color: $color-bg-accent;
+  border-radius: 4px;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  margin-bottom: 0;
+}
+
+.title {
+  grid-area: title;
+  font-size: 16px;
+  font-weight: 600;
+  color: $color-text-dark;
+  margin-bottom: 8px;
+}
+
+.closeButton {
+  grid-area: close;
+  background: none;
+  border: none;
+  color: $color-text-secondary;
+  cursor: pointer;
+  font-size: 20px;
+  padding: 0;
+}
+
+.message {
+  grid-area: message;
+  font-size: 14px;
+  color: $color-text-secondary;
+  margin-bottom: 24px;
+}
+
+.actions {
+  grid-area: actions;
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.btn {
+  padding: 8px 16px;
+  border: 1px solid $color-border-dark;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  flex: none;
+}
+
+.btnCancel {
+  background: $color-bg-card;
+  color: $color-text-dark;
+
+  &:hover {
+    background: $color-bg-hover;
+  }
+}
+
+.btnDelete {
+  background: $color-button-dark;
+  color: $color-text-white;
+  border-color: $color-button-dark;
+
+  &:hover {
+    background: $color-button-dark-hover;
+  }
+}
+
+.btnConfirm {
+  background: $color-primary;
+  color: $color-text-white;
+  border-color: $color-primary;
+
+  &:hover {
+    background: $color-primary-hover;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
